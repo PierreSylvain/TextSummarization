@@ -1,24 +1,22 @@
 # Text Summarization
 
-The goal of this project is to  create text summary from article or document. It's written in Python and does not use any Machine Learning algorithms; only simple mathematical calculations (May be :-)); 
+The goal of this project is to create a text summary from articles or documents. It's written in Python and does not use any Machine Learning algorithms; only simple mathematical calculations (May be :-)); 
 
-To make  text summary today you just have to find the right library (NLTK, Gensim, etc.) and with 4 lines of code the summary is done. This project will use a technique of text summarization for keeping the objective of simplicity and efficiency without library.
+To make text summary today you just have to find the right library (NLTK, Gensim, etc.) and with 4 lines of code the summary is done. This project will use a technique of text summarization for keeping the objective of simplicity and efficiency without a library.
 
-We will use an extractive method, i.e. the summary will be made from the sentences of the text and not by creating new sentences.
+We will use an extractive method, i.e. the summary will be made from the existing sentences of the text and not by creating new sentences.
 
-To select the relevant sentences in the text we use the [TF-IDF](https://fr.wikipedia.org/wiki/TF-IDF) method. This type of method consists in determining the relevance of a word in a document. Then we compare all the sentences with each other to determine the [cosine similarity](https://fr.wikipedia.org/wiki/Similarit%C3%A9_cosinus), in other term we compare of the sentences to finf there similarity.
+To select the relevant sentences in the text we use the [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) method. This type of method consists in determining the relevance of a word in a document. Then we compare all the sentences with each other to determine the [cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity), in other words we compare the sentences to find there similarity.
 
-
-Finally, we sort  sentences  ordered by  relevance.
+Finally, we sort all sentences by relevance.
 
 **Note** : This project aim to work with French texts. However, it is easy to change the linguistic specificity.
 
-
 ## Data Processing
 
-This project is divided into 5 step :
+This project is divided into 5 steps:
 
-1. [Retrieve data and transform plain text into a phrase list](#Sentence retrieval)
+1. [Retrieve data and transform plain text into a list of phrases](#Sentence retrieval)
 
 2. [Filter data to keep important words](#Filtering data)
 
@@ -28,7 +26,7 @@ This project is divided into 5 step :
 
 5. [Sentence Sorting](#Sentence Sorting)
 
-### Le texte
+### The text
 
 We have chosen a random newspaper article. The first sentence of the text is the title.
 
@@ -49,47 +47,43 @@ We have chosen a random newspaper article. The first sentence of the text is the
 
 ### Sentence retrieval
 
-This first step consist in retrieving the article and breaking it down into sentences. A sentence should be considered as a series of signs ending either with a period (.), a question mark (?), an exclamation mark (!) or an end of line.
-
+This first step consists in analyzing the article and breaking it down into sentences. A sentence should be considered as a series of signs ending either with a period (.), a question mark (?), an exclamation mark (!) or an end of line.
 In order to split the sentences, it is necessary to consider exceptions:
-
  - Don't keep empty lines.
  - The sign "..." should not be considered as 3 sentence ends but only one sentence end.
- - Do not consider as an end of sentence a punctuation sign which is in a quote. For example: Son intervention était parsemée de " quand ? ", de  "pourquoi ? " et de " comment ? ". This exception is not managed in this project.
- - Sometimes a sentence may not be finished after a line break.
-
+ - Do not consider as an end of sentence a punctuation sign which is in a quote. For example: Son intervention était parsemée de " quand ? ", de "pourquoi ? " et de " comment ? ". This exception is not managed in our project.
+- Sometimes a sentence may not be finished after a line break.
 
 There are many other exceptions, which can be discovered by analyzing the datasets.
 
 ### Filtering data
 
-The objective of this second step is to remove non relevant word in sentence.
+The objective of this second step is to remove non relevant words from sentences.
 
-For example for the sentence :
+For example in this sentence:
 
 > C'est en amont du meurtre que la justice n'est clairement pas à la hauteur
 
- - Delete punctuation characters : ", ; :", etc.
- - Replace contracted forms with their extended form. Like  "n'" which becomes "ne".
- - Delete stop words (this list is provided by the NLTK library)
- - Replace all the words in lower case (the goal is to classify words so they must all be written the same way)
- - Special case of  "-" sign. Keep it or not depends opn word meaning. For example "vis-à-vis" is a complete word whereas "partirez-vous" sould be split in 2 parts. The "-" sign can also be used as a hyphenation. Theses cases are not managed in this project.
+- Delete punctuation characters : ", ; :", etc.
+- Replace contracted forms with their extended form. Like "n'" which become "ne".
+- Delete stop words (this list is provided by the NLTK library)
+- Replace all the words in lower case (the goal is to classify words so they must all be written the same way)
+- Special case of "-" sign. Keep it or not depends on word meaning. For example "vis-à-vis" is a complete word whereas "partirez-vous" should be split in 2 parts. The "-" sign can also be used as a hyphenation. Theses cases are not managed in our project.
 
 In this project the word "pas" has not been selected, it is a bias. However, it is generally necessary to keep the negatives form to avoid misunderstanding.
 
 The sentence will become : "amont, meurtre, justice, clairement, hauteur"
 
-Other techniques exist to fine tuning data filtering:
+Other techniques exist to fine tune data filtering:
+ - Lemmatisation, will search the canonical form of the word. For example "petites, petite, petits, petit" will be replaced by "petit". There is an online lemmatisation tool (https://www.jerome-pasquelin.fr/tools/outil_lemmatisation.php)
+ - **Stemming**, will keep the root of the word. (ex. "clairement" will become "clair")
 
-- [Lemmatisation](https://fr.wikipedia.org/wiki/Lemmatisation), will search the canonical form of the word. For example  "petites, petite, petits, petit" will be replaced by "petit". There is an online lemmatisation tool  (https://www.jerome-pasquelin.fr/tools/outil_lemmatisation.php)
-- [Stemming](https://en.wikipedia.org/wiki/Stemming), will keep the root of the word. (ex. "clairement" will become "clair")
-
-This is the most important part in data preparation and this is the part that takes the most time to analyze. As saying,  "Garbage in, garbage out." 
+This is the most important part in data preparation and this is the part that takes the most time to analyze. As saying, "Garbage in, garbage out." 
 
 ### Sentence vectorization
-Once filtered sentences have been generated, the next step is to make sentence vector, i.e. to put each word of the sentence in a numerical form. There are many techniques to vectorize a sentence such as [Wod2vec](https://fr.wikipedia.org/wiki/Word2vec) or with neural networks like [LSTM](https://en.wikipedia.org/wiki/Long_short-term_memory). In this project we will use [TF-IDF](https://fr.wikipedia.org/wiki/TF-IDF). TF-IDF will calculate the pertinence of each word in the article and replace each word by this value.
+Once filtered sentences have been generated, the next step is to make sentence vector, i.e. to put each word of the sentence in a numerical form. There are many techniques to vectorize a sentence such as Wod2vec or with neural networks like LSTM. In this project we will use TF-IDF. TF-IDF will calculate the pertinence of each word in the article and replace each word by this value.
 
-TF-IDF processing is done as follows. We get the number of occurrences of a word in a sentence, then we will weight it with the occurrences of the same word in the other sentences. 
+TF-IDF processing is done as follow. We get the number of occurrences of a word in a sentence, then we will weight it with the occurrences of the same word in the other sentences. 
 
 From previously filtered sentence: "amont, meurtre, justice, clairement, hauteur"
 
@@ -103,7 +97,7 @@ Result of TF-IDF processing:
 | clairement | 1    | 2    | 2.251  |
 | hauteur    | 1    | 1    | 2.944  |
 
-Most important words in this sentence are "upstream", "murder" and "height".  These three words are less used in the document, while we found 5 out of 19 sentences with the word  "justice"
+Most important words in this sentence are "upstream", "murder" and "height". These three words are less used in the document, while we found 5 out of 19 sentences with the word "justice"
 
 The setence vector is: 
 
@@ -112,7 +106,7 @@ The setence vector is:
 ```
 
 ### Similarity cosine
-Once the sentences are vectorized, we will proceed to  [cosine similarity](https://fr.wikipedia.org/wiki/Similarit%C3%A9_cosinus). We will calculate the similarity of the sentences between them.
+Once the sentences are vectorized, we will proceed to cosine similarity. We will calculate the similarity of the sentences between them.
 
 For the previously filtered sentence: "amont, meurtre, justice, clairement, hauteur which is in fact [ 2.944, 2.994, 1.335, 2.251,2.944 ].
 
@@ -148,9 +142,9 @@ The 3 sentences text summary for  "**Le constat d'échec de la justice dans la p
 > Dans 35% des cas où des violences préexistaient, elles n’avaient pas été dénoncées à la police, mais étaient le plus souvent connues de la famille, des voisins ou de services sociaux.
 
 
-## Next Step
-This project is a simple summary method that works in most cases, however, there is many improvement ways at each stage of construction. Adding more exceptions in data filtering is a good approach to get a "cleaner" text. Filtering is essential in data processing. In sentence vectorization other algorithms can be explored as [Wod2vec](https://fr.wikipedia.org/wiki/Word2vec), or [GloVe](https://nlp.stanford.edu/projects/glove/). Finally, in the sentence ranking, it is possible to use a "ranking" method.
+## Last
+This project is a simple summary method that works in most cases, however, there are many improvement possibilities at each stage. Adding more exceptions in the data filtering is a good approach to get a "cleaner" text. Filtering is essential in data processing. In sentence vectorization other algorithms can be explored as [Wod2vec](https://en.wikipedia.org/wiki/Word2vec), or [GloVe](https://nlp.stanford.edu/projects/glove/). Finally, in the sentence ranking, it is possible to use a "ranking" method.
 
-In the end, the method depends on summarization type and on summarization precision 
+The method mainly depends on summarization type and on summarization precision 
 
-In the end, the method to be used must depend on the type of text to be summarized and the degree of summary desired.
+Finally, the method to be used must depend on the type of text to be summarized and the desired degree of summary.
